@@ -13,7 +13,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <App width={300} height={300} />
+    <App width={window.innerWidth} height={300} />
   </React.StrictMode>
 );
 

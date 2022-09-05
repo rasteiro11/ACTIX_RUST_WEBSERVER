@@ -6,6 +6,9 @@ export class Point implements GPrimitive {
     this.context = context
   }
 
+  getX() {return this.x}
+  getY() {return this.y}
+
   draw(): void {
     //ctx.fillStyle = 'rgba(255, 255, 0, 255)'
     //ctx.fillRect(e.clientX - rect.left, e.clientY - rect.top, 1, 1)

@@ -1,15 +1,15 @@
 
 export enum GType {
-  Line = "Line",
-  Point = "Point",
-  None = "None"
+  Line = 'L',
+  Point = 'P',
+  None = 'N'
 }
 
 export function getTypeFromString(s: string): GType {
   switch (s) {
-    case "Point":
+    case "P":
       return GType.Point
-    case "Line":
+    case "L":
       return GType.Line
     default:
       return GType.None

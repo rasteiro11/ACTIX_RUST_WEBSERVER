@@ -4,6 +4,8 @@ use actix::prelude::*;
 use actix_web_actors::ws;
 use log::info;
 
+use crate::{point::point::Point, writter::writter::Writter};
+
 pub struct WebSocket;
 
 impl WebSocket {
@@ -43,7 +45,7 @@ impl Actor for WebSocket {
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         // process websocket messages
-        println!("WS: {msg:?}");
+        //println!("WS: {msg:?}");
         match msg {
             //Ok(ws::Message::Ping(msg)) => {
             //    self.hb = Instant::now();
@@ -53,8 +55,13 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
             //    self.hb = Instant::now();
             //}
             Ok(ws::Message::Text(text)) => {
-                print!("{}", text);
-                ctx.text(text)
+                let c = text.clone();
+                let point = serde_json::from_slice::<Point>(text.into_bytes().as_ref());
+                if let Ok(p) = point {
+                    p.store("TEST.txt".to_string());
+                    info!("{:?}", p);
+                    return ctx.text(c);
+                }
             }
             // Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
             Ok(ws::Message::Close(reason)) => {

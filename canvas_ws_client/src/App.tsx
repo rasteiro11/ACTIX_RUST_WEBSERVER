@@ -1,4 +1,5 @@
 import React, {createRef} from 'react';
+import {CanvasWS} from './CanvasWS';
 import {getTypeFromString, GType} from './GType';
 import {Line} from './Line';
 import {Point} from './Point';
@@ -24,7 +25,7 @@ export type Point2D = {
 
 class App extends React.Component<Props, State> {
   private canvasRef: React.RefObject<HTMLCanvasElement>
-  private ws: WebSocket
+  private ws: CanvasWS
   private renderer: Renderer
   private tempCoords: Point2D[]
   private menuHeight: number
@@ -34,10 +35,10 @@ class App extends React.Component<Props, State> {
     this.renderer = new Renderer()
     this.tempCoords = []
     // PAY ATTENTION TO THE PORT
-    this.ws = new WebSocket("ws://127.0.0.1:8080/ws")
-    this.ws.onopen = (event) => {
-      this.ws.send("CLIENT SENT YOU THIS")
-    }
+    this.ws = new CanvasWS("ws://127.0.0.1:8080/ws")
+   // this.ws.onopen = (event) => {
+   //   this.ws.send("CLIENT SENT YOU THIS")
+   // }
 
 
     this.canvasRef = createRef()
@@ -131,16 +132,20 @@ class App extends React.Component<Props, State> {
         const rect = canvas.getBoundingClientRect()
         switch (this.state.graphicsType) {
           case GType.Point:
-            console.log("ADDING POINT")
-            this.renderer.addMesh(new Point(ctx, e.clientX - rect.left, e.clientY - rect.top, color))
+//            console.log("ADDING POINT")
+            const tempPoint = new Point(ctx, e.clientX - rect.left, e.clientY - rect.top, color)
+            this.renderer.addMesh(tempPoint)
+            this.ws.sendPoint(tempPoint)
             this.clearScreen()
             this.renderer.renderAll()
             break;
           case GType.Line:
             this.tempCoords.push({x: e.clientX - rect.left, y: e.clientY - rect.top})
             if (this.tempCoords.length === 2) {
-              this.renderer.addMesh(new Line(ctx, this.tempCoords[0], this.tempCoords[1], color))
-              console.log("ADDING LINE")
+              const tempLine = new Line(ctx, this.tempCoords[0], this.tempCoords[1], color)
+              this.renderer.addMesh(tempLine)
+  //            console.log("ADDING LINE")
+              this.ws.sendLine(tempLine)
               this.clearScreen()
               this.renderer.renderAll()
               this.tempCoords = []
@@ -154,7 +159,7 @@ class App extends React.Component<Props, State> {
   }
 
   onButtonClick(): void {
-    if (this.ws.readyState === WebSocket.OPEN) {
+    if (this.ws.isOpen()) {
       this.ws.send("HAHA YOU GAY")
     } else {
       alert("BRO THIS IS CLOSED")

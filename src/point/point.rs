@@ -5,10 +5,11 @@ use serde::{Deserialize, Serialize};
 use crate::writter::writter::Writter;
 use std::io::Write;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
+    pub color: String,
 }
 
 impl Writter for Point {
@@ -26,6 +27,10 @@ impl Writter for Point {
 
 impl Point {
     pub fn new(x: i32, y: i32) -> Point {
-        Point { x, y }
+        Point {
+            x,
+            y,
+            color: String::new(),
+        }
     }
 }
