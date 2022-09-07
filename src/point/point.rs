@@ -10,6 +10,8 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
     pub color: String,
+    #[serde(alias = "type")]
+    pub t: String,
 }
 
 impl Writter for Point {
@@ -31,6 +33,7 @@ impl Point {
             x,
             y,
             color: String::new(),
+            t: String::new(),
         }
     }
 }

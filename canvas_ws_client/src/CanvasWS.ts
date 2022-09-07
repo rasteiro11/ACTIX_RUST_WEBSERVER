@@ -1,7 +1,5 @@
-import {GType} from "./GType"
 import {Line} from "./Line"
 import {Point} from "./Point"
-import {SendMessage} from "./SendMessage"
 
 export class CanvasWS extends WebSocket {
   constructor(url: string) {
@@ -18,6 +16,7 @@ export class CanvasWS extends WebSocket {
   }
   public sendPoint(p: Point) {
     if (this.isOpen()) {
+      // console.log("POINT: ", p)
       this.send(JSON.stringify(p, (key, value) => {
         if (key === "context") return undefined
         return value
@@ -41,10 +40,9 @@ export class CanvasWS extends WebSocket {
   //}
 
   public sendLine(l: Line) {
-    const lineMessage = new SendMessage<Line>(l, GType.Line, "TEST.txt")
     if (this.isOpen()) {
-      console.log("SOCKET IS CONNECTED")
-      this.send(JSON.stringify(lineMessage, (key, value) => {
+      // console.log("LINE: ", l)
+      this.send(JSON.stringify(l, (key, value) => {
         if (key === "context") return undefined
         return value
       }))

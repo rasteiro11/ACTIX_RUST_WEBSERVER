@@ -1,8 +1,12 @@
 import {GPrimitive} from "./GPrimitive";
+import {GType} from "./GType";
 
 export class Point implements GPrimitive {
   context: CanvasRenderingContext2D;
+  type: string;
+
   constructor(context: CanvasRenderingContext2D, private x: number, private y: number, private color: string) {
+    this.type = GType.Point
     this.context = context
   }
 
