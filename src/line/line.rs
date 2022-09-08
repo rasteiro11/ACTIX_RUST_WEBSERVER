@@ -2,25 +2,22 @@ use std::fs::OpenOptions;
 
 use serde::{Deserialize, Serialize};
 
-use crate::writter::writter::Writter;
+use crate::{
+    point::point::{Point, Point2D},
+    writter::writter::Writter,
+};
 use std::io::Write;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct Point2D {
-    pub x: i32,
-    pub y: i32,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct Point {
-    pub x: i32,
-    pub y: i32,
+pub struct Line {
+    pub p1: Point2D,
+    pub p2: Point2D,
     pub color: String,
     #[serde(alias = "type")]
     pub t: String,
 }
 
-impl Writter for Point {
+impl Writter for Line {
     fn store(&self, filename: String) {
         let mut f = OpenOptions::new()
             .append(true)
@@ -33,13 +30,13 @@ impl Writter for Point {
     }
 }
 
-impl Point {
-    pub fn new(x: i32, y: i32) -> Point {
-        Point {
-            x,
-            y,
-            color: String::new(),
-            t: String::new(),
-        }
-    }
-}
+//impl Line {
+//    pub fn new(p1: Point, p2: Point) -> Line {
+//        Line {
+//            p1,
+//            p2,
+//            color: String::new(),
+//            t: String::new(),
+//        }
+//    }
+//}

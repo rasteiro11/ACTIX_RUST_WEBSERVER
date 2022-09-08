@@ -5,7 +5,7 @@ use actix_web::web::Bytes;
 use actix_web_actors::ws;
 use log::info;
 
-use crate::{line::line::Line, point::point::Point, writter::writter::Writter};
+use crate::{point::point::Point, writter::writter::Writter};
 use std::fs::OpenOptions;
 
 use serde::{Deserialize, Serialize};
@@ -55,23 +55,11 @@ struct GPrimitive {
 // WE STILL NEED TO PARSE A LINE
 fn parse_type(t: &GPrimitive, text: &Bytes) {
     match t.t.as_str() {
-        "L" => {
-            let line = serde_json::from_slice::<Line>(&text);
-            match &line {
-                Ok(l) => {
-                    info!("WE PARSED POINT: {:?}\n", l);
-                    l.store("LINES.txt".to_string());
-                }
-                Err(_) => info!("COULD NOT PARSE LINE\n"),
-            }
-        }
+        "L" => info!("WE RECEIVED A LINE"),
         "P" => {
             let point = serde_json::from_slice::<Point>(&text);
             match &point {
-                Ok(p) => {
-                    info!("WE PARSED POINT: {:?}\n", p);
-                    p.store("POINTS.txt".to_string());
-                }
+                Ok(p) => info!("WE PARSED POINT: {:?}\n", p),
                 Err(_) => info!("COULD NOT PARSE POINT\n"),
             }
         }

@@ -28,6 +28,7 @@ mod writter;
 use writter::writter::Writter;
 mod web_socket;
 use web_socket::web_socket::WebSocket;
+mod line;
 //mod server;
 //use self::server::MyWebSocket;
 
