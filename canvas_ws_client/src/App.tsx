@@ -1,6 +1,6 @@
 import React, {createRef} from 'react';
 import {CanvasWS} from './CanvasWS';
-import {getTypeFromString, GType} from './GType';
+import {getStringFromType, getTypeFromString, GType} from './GType';
 import {Line} from './Line';
 import {Point} from './Point';
 import {Renderer} from './Renderer';
@@ -16,6 +16,7 @@ type State = {
   width: number
   height: number
   graphicsType: GType
+  user: string
 }
 
 export type Point2D = {
@@ -47,6 +48,7 @@ class App extends React.Component<Props, State> {
       counter: 0,
       width: props.width,
       height: props.height,
+      user: "TIM",
       graphicsType: GType.None
     }
   }
@@ -111,16 +113,22 @@ class App extends React.Component<Props, State> {
       <>
       <div id="menu" style={{border: '1px solid blue', display: 'flex', flexDirection: 'row'}}>
           <select value={this.state.graphicsType} onChange={(e) => this.handleSelect(e)}>
-            <option value={GType.Line}>{GType.Line}</option>
-            <option value={GType.Point}>{GType.Point}</option>
-            <option value={GType.None}>{GType.None}</option>
+            <option value={GType.Line}>{getStringFromType(GType.Line)}</option>
+            <option value={GType.Point}>{getStringFromType(GType.Point)}</option>
+            <option value={GType.None}>{getStringFromType(GType.None)}</option>
           </select>
+          <label style={{marginRight: "10px"}} htmlFor="user">User: </label>
+          <input value={this.state.user} onChange={(e) => this.handleUserChange(e)} />
         </div>
-        <canvas onClick={(e) => this.handleCanvasClick(e)} style={{
+        <canvas id="user" onClick={(e) => this.handleCanvasClick(e)} style={{
           border: '1px solid red',
         }} ref={this.canvasRef} height={this.state.height - 2 - this.menuHeight } width={this.state.width - 2} />
       </>
     )
+  }
+
+  handleUserChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    this.setState({user: e.currentTarget.value})
   }
 
   handleCanvasClick(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
@@ -132,7 +140,6 @@ class App extends React.Component<Props, State> {
         const rect = canvas.getBoundingClientRect()
         switch (this.state.graphicsType) {
           case GType.Point:
-//            console.log("ADDING POINT")
             const tempPoint = new Point(ctx, e.clientX - rect.left, e.clientY - rect.top, color)
             this.renderer.addMesh(tempPoint)
             this.ws.sendPoint(tempPoint)
@@ -144,7 +151,6 @@ class App extends React.Component<Props, State> {
             if (this.tempCoords.length === 2) {
               const tempLine = new Line(ctx, this.tempCoords[0], this.tempCoords[1], color)
               this.renderer.addMesh(tempLine)
-  //            console.log("ADDING LINE")
               this.ws.sendLine(tempLine)
               this.clearScreen()
               this.renderer.renderAll()
