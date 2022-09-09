@@ -13,12 +13,10 @@ pub struct Line {
     pub p1: Point2D,
     pub p2: Point2D,
     pub color: String,
-    #[serde(alias = "type")]
-    pub t: String,
 }
 
 impl Writter for Line {
-    fn store(&self, filename: String) {
+    fn store(&self, filename: &String) {
         let mut f = OpenOptions::new()
             .append(true)
             .create(true)

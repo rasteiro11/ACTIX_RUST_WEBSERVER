@@ -142,7 +142,7 @@ class App extends React.Component<Props, State> {
           case GType.Point:
             const tempPoint = new Point(ctx, e.clientX - rect.left, e.clientY - rect.top, color)
             this.renderer.addMesh(tempPoint)
-            this.ws.sendPoint(tempPoint)
+            this.ws.sendPoint(tempPoint, this.state.user)
             this.clearScreen()
             this.renderer.renderAll()
             break;
@@ -151,7 +151,7 @@ class App extends React.Component<Props, State> {
             if (this.tempCoords.length === 2) {
               const tempLine = new Line(ctx, this.tempCoords[0], this.tempCoords[1], color)
               this.renderer.addMesh(tempLine)
-              this.ws.sendLine(tempLine)
+              this.ws.sendLine(tempLine, this.state.user)
               this.clearScreen()
               this.renderer.renderAll()
               this.tempCoords = []

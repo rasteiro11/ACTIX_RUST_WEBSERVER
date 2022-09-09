@@ -16,12 +16,10 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
     pub color: String,
-    #[serde(alias = "type")]
-    pub t: String,
 }
 
 impl Writter for Point {
-    fn store(&self, filename: String) {
+    fn store(&self, filename: &String) {
         let mut f = OpenOptions::new()
             .append(true)
             .create(true)
@@ -39,7 +37,6 @@ impl Point {
             x,
             y,
             color: String::new(),
-            t: String::new(),
         }
     }
 }

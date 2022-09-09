@@ -41,7 +41,7 @@ async fn hello() -> impl Responder {
 #[get("/point/{x}/{y}")]
 async fn format_point(path: web::Path<Point>) -> HttpResponse {
     let point = Point::new(path.x, path.y);
-    point.store("Points.txt".to_string());
+    point.store(&"Points.txt".to_string());
     let point_str = serde_json::to_string(&point).unwrap();
     HttpResponse::Ok()
         .content_type("application/json")

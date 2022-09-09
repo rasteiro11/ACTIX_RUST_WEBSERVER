@@ -4,9 +4,7 @@ import {GType} from "./GType";
 
 export class Line implements GPrimitive {
   context: CanvasRenderingContext2D;
-  type: string
   constructor(context: CanvasRenderingContext2D, private p1: Point2D, private p2: Point2D, private color: string) {
-    this.type = GType.Line
     this.context = context
   }
 

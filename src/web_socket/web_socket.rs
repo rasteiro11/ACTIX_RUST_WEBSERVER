@@ -46,31 +46,45 @@ impl Actor for WebSocket {
     }
 }
 
+//#[derive(Deserialize, Serialize, Debug)]
+//struct GPrimitive {
+//    #[serde(alias = "type")]
+//    pub t: String,
+//}
+
 #[derive(Deserialize, Serialize, Debug)]
-struct GPrimitive {
+struct Message<T> {
+    pub data: T,
+    pub user: String,
+    #[serde(alias = "type")]
+    pub t: String,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct Type {
     #[serde(alias = "type")]
     pub t: String,
 }
 
 // WE STILL NEED TO PARSE A LINE
-fn parse_type(t: &GPrimitive, text: &Bytes) {
+fn parse_type(t: &Type, text: &Bytes) {
     match t.t.as_str() {
         "L" => {
-            let line = serde_json::from_slice::<Line>(&text);
+            let line = serde_json::from_slice::<Message<Line>>(&text);
             match &line {
-                Ok(l) => {
-                    info!("WE PARSED POINT: {:?}\n", l);
-                    l.store("LINES.txt".to_string());
+                Ok(lm) => {
+                    info!("WE PARSED POINT: {:?}\n", lm);
+                    lm.data.store(&lm.user);
                 }
                 Err(_) => info!("COULD NOT PARSE LINE\n"),
             }
         }
         "P" => {
-            let point = serde_json::from_slice::<Point>(&text);
+            let point = serde_json::from_slice::<Message<Point>>(&text);
             match &point {
-                Ok(p) => {
-                    info!("WE PARSED POINT: {:?}\n", p);
-                    p.store("POINTS.txt".to_string());
+                Ok(pm) => {
+                    info!("WE PARSED POINT: {:?}\n", pm);
+                    pm.data.store(&pm.user);
                 }
                 Err(_) => info!("COULD NOT PARSE POINT\n"),
             }
@@ -81,32 +95,15 @@ fn parse_type(t: &GPrimitive, text: &Bytes) {
 
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
-        // process websocket messages
-        //println!("WS: {msg:?}");
         match msg {
             Ok(ws::Message::Text(text)) => {
-                //let clone = text.clone();
-                // let ret = text.clone();
-                // let t = serde_json::from_slice::<GPrimitive>(text.into_bytes().as_ref());
-                let t = serde_json::from_slice::<GPrimitive>(&text.as_bytes());
-                //let point = serde_json::from_slice::<Point>(&text.as_bytes());
-                //match point {
-                //    Ok(p) => info!("{:?}", p),
-                //    Err(e) => info!("{:?}", e),
-                //}
+                let t = serde_json::from_slice::<Type>(&text.as_bytes());
                 match &t {
                     Ok(ty) => parse_type(ty, &text.as_bytes()),
                     Err(e) => info!("{:?}", e),
                 }
                 return ctx.text(text);
-                //let point = serde_json::from_slice::<Point>(text.into_bytes().as_ref());
-                //if let Ok(p) = point {
-                //    p.store("TEST.txt".to_string());
-                //    info!("{:?}", p);
-                //    return ctx.text(ret);
-                //}
             }
-            // Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
             Ok(ws::Message::Close(reason)) => {
                 ctx.close(reason);
                 ctx.stop();
