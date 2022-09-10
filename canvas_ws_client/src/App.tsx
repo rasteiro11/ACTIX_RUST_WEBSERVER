@@ -17,6 +17,7 @@ type State = {
   height: number
   graphicsType: GType
   user: string
+  color: string
 }
 
 export type Point2D = {
@@ -49,6 +50,7 @@ class App extends React.Component<Props, State> {
       width: props.width,
       height: props.height,
       user: "TIM",
+      color: "#FFFF00",
       graphicsType: GType.None
     }
   }
@@ -72,8 +74,8 @@ class App extends React.Component<Props, State> {
 
 
   componentDidMount() {
-    window.addEventListener('resize', this.updateDimensions);
-    
+    window.addEventListener('resize', () => this.updateDimensions());
+    this.updateDimensions()
   }
 
   private getContext(): CanvasRenderingContext2D | null {
@@ -87,20 +89,11 @@ class App extends React.Component<Props, State> {
     return null
   }
 
-  updateDimensions = () => {
+  updateDimensions() {
     const menu = document.getElementById("menu") as HTMLDivElement
     this.menuHeight = menu.offsetHeight
     this.setState({width: window.innerWidth, height: window.innerHeight});
-    //console.log("WINDOW HEIGHT: ", window.innerHeight)
-    //console.log(menu.offsetHeight)
-  };
-
-  //<input onChange={(e) => this.onInputChange(e)}></input>
-  //<p>
-  //  {this.state.text}
-  //</p>
-  //<button onClick={() => this.onButtonClick()}>Click Me</button>
-  //<p>{this.state.counter}</p>
+  }
 
   handleSelect(e: React.ChangeEvent<HTMLSelectElement>) {
     this.setState({
@@ -111,20 +104,26 @@ class App extends React.Component<Props, State> {
   render(): React.ReactNode {
     return (
       <>
-      <div id="menu" style={{border: '1px solid blue', display: 'flex', flexDirection: 'row'}}>
-          <select value={this.state.graphicsType} onChange={(e) => this.handleSelect(e)}>
+      <div id="menu" style={{border: '1px solid blue', display: 'flex', flexDirection: 'row', justifyContent: "center", alignItems: "center"}}>
+          <label htmlFor="primitive" style={{ marginRight: "0.5vw", marginLeft: "0.5vw"}} >Primitive: </label>
+          <select id="primitive" value={this.state.graphicsType} onChange={(e) => this.handleSelect(e)}>
             <option value={GType.Line}>{getStringFromType(GType.Line)}</option>
             <option value={GType.Point}>{getStringFromType(GType.Point)}</option>
             <option value={GType.None}>{getStringFromType(GType.None)}</option>
           </select>
-          <label style={{marginRight: "10px"}} htmlFor="user">User: </label>
+          <label style={{ marginRight: "0.5vw", marginLeft: "0.5vw"}} htmlFor="user">User: </label>
           <input value={this.state.user} onChange={(e) => this.handleUserChange(e)} />
+          <input type="color" style={{ marginRight: "0.5vw", marginLeft: "0.5vw"}} value={this.state.color} onChange={(e) => this.handleColorChange(e)} />
         </div>
         <canvas id="user" onClick={(e) => this.handleCanvasClick(e)} style={{
           border: '1px solid red',
         }} ref={this.canvasRef} height={this.state.height - 2 - this.menuHeight } width={this.state.width - 2} />
       </>
     )
+  }
+
+  handleColorChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    this.setState({color: e.currentTarget.value})
   }
 
   handleUserChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -134,13 +133,12 @@ class App extends React.Component<Props, State> {
   handleCanvasClick(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
     const canvas = this.canvasRef.current
     const ctx = this.getContext()
-    const color = 'rgba(255, 255, 0, 255)'
     if (canvas) {
       if (ctx) {
         const rect = canvas.getBoundingClientRect()
         switch (this.state.graphicsType) {
           case GType.Point:
-            const tempPoint = new Point(ctx, e.clientX - rect.left, e.clientY - rect.top, color)
+            const tempPoint = new Point(ctx, e.clientX - rect.left, e.clientY - rect.top, this.state.color)
             this.renderer.addMesh(tempPoint)
             this.ws.sendPoint(tempPoint, this.state.user)
             this.clearScreen()
@@ -149,7 +147,7 @@ class App extends React.Component<Props, State> {
           case GType.Line:
             this.tempCoords.push({x: e.clientX - rect.left, y: e.clientY - rect.top})
             if (this.tempCoords.length === 2) {
-              const tempLine = new Line(ctx, this.tempCoords[0], this.tempCoords[1], color)
+              const tempLine = new Line(ctx, this.tempCoords[0], this.tempCoords[1], this.state.color)
               this.renderer.addMesh(tempLine)
               this.ws.sendLine(tempLine, this.state.user)
               this.clearScreen()
