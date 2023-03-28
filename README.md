@@ -7,3 +7,11 @@ Online canvas drawing client written in Typescript, using React and server writt
   - load drawings history when connecting
   - multiple colors for you to choose from
    
+- Run client:
+  ``` 
+    npm start
+  ```
+- Run server
+  ``` 
+    cargo run
+  ```
