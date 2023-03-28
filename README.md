@@ -4,5 +4,6 @@ Online canvas drawing client written in Typescript, using React and server writt
 
 - Features:
   - real time storage for drawings using websocket
-  - load history at first connection
- 
+  - load drawings history when connecting
+  - multiple colors for you to choose from
+   
